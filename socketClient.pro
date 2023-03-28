@@ -1,5 +1,5 @@
 QT -= gui
-QT +=network
+QT +=network quick
 
 CONFIG += c++17 console
 CONFIG -= app_bundle
@@ -10,7 +10,10 @@ CONFIG -= app_bundle
 
 SOURCES += \
         createConnectionCLient.cpp \
-        main.cpp
+        ifaceqml.cpp \
+        main.cpp \
+        relationclinetserver.cpp
+RESOURCES += qml.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -18,4 +21,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    createConnectionCLient.h
+    createConnectionCLient.h \
+    ifaceqml.h \
+    relationclinetserver.h
+
+DISTFILES +=
