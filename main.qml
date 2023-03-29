@@ -3,18 +3,23 @@ import QtQuick.Window 2.14
 import QtQuick.Controls 2.12
 Window {
     visible: true
-    width: 800
-    height: 500
+
+    width: 850
+    height: 600
+
     property var graphNumbers
     property var sizeListGraphe
 
     property int counterHeightChart: 20
     property int numRects: 5 // Number rects
     //    property int rectWidth: Math.floor ( ( width  - ( numRects + 1 ) * rectMargin ) / numRects)
-    property int rectWidth: Math.floor ( ( width  -  numRects   * rectMargin ) / numRects) // remove right margin
+    property int rectWidth: Math.floor ( ( width*0.9599  -  numRects   * rectMargin ) / numRects) // remove right margin
     // find best height and weight with margin between
-    property int rectHeight: Math.floor( ( height -  numRects  * rectMargin ) / numRects)
+    property int rectHeight: Math.floor( ( height*0.9 -  numRects  * rectMargin ) / numRects)
     property int rectMargin: 1 // specify the margin between each rectangle
+
+    property bool hoveredButtonStop: true
+    property bool clickeButtonStartEnable: true
 
     Connections{
         target: interfaceQML
@@ -78,7 +83,7 @@ Window {
 
     Rectangle {
         id: rect
-        height: parent.height
+        height: parent.height*0.9
         width: parent.width*0.95
         anchors.right: parent.right
         Canvas {
@@ -122,7 +127,7 @@ Window {
                 ctx.strokeStyle = "green";
                 ctx.lineWidth = 15;
                 ctx.beginPath();
-                ctx.moveTo(0, parent.height - 7);
+                ctx.moveTo(0, parent.height - 66);
                 for(var i =0 ; i < sizeListGraphe; i++)
                 {
                     ctx.lineTo(interfaceQML.m_graphNumber[i]  ,(interfaceQML.m_graphNumber[i+1] > sizeListGraphe ? 0 : interfaceQML.m_graphNumber[i+1]));
@@ -130,5 +135,61 @@ Window {
                 ctx.stroke();
             }
         }
+    }
+
+    Rectangle{
+        id:buttonStop
+        width: parent.width*0.1
+        height: parent.height*0.09
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottomMargin: parent.height*0.005
+        radius: parent.width*0.01
+        color: "gray"
+
+        Text {
+            id: name
+            text: "Be Carefully"
+            anchors.centerIn: parent
+        }
+
+        MouseArea{
+            hoverEnabled: true
+            anchors.fill: parent
+            onReleased:  {
+                clickeButtonStartEnable = true
+                buttonStop.color = "gray"
+                interfaceQML.inputSetSatus(false)
+            }
+        }
+    }
+
+    Rectangle{
+        id:buttonStart
+        width: parent.width*0.1
+        height: parent.height*0.09
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: parent.height*0.005
+        radius: parent.width*0.01
+
+        anchors.left:buttonStop.right
+        color:(clickeButtonStartEnable) ?  "green" : "gray"
+        anchors.leftMargin: parent.width*0.1
+
+        Text {
+            text: "Save Life"
+            anchors.centerIn: parent
+        }
+
+        MouseArea{
+            anchors.fill: parent
+            onReleased:  {
+                clickeButtonStartEnable = false
+                buttonStop.color = "red"
+                interfaceQML.inputSetSatus(true)
+            }
+
+        }
+
     }
 }
