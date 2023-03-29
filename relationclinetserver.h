@@ -24,6 +24,8 @@ private:
     QVector<double> m_saveDataServer;
 private slots:
     void reciveServer();
+public slots:
+    void sendStatusService(const bool &_status);
 
 };
 

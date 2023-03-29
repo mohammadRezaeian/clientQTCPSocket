@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
     IFaceQML _ifaceQML;
 
     QObject::connect(&_relationClinetServer, &RelationClinetServer::sendGraphNumber, &_ifaceQML , &IFaceQML::recivedGraphNumber );
+    QObject::connect(&_ifaceQML , &IFaceQML::statusService , &_relationClinetServer , &RelationClinetServer::sendStatusService);
 
 
     engine.rootContext()->setContextProperty("interfaceQML" ,  &_ifaceQML);

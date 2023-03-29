@@ -35,3 +35,13 @@ void RelationClinetServer::reciveServer()
 
     emit sendGraphNumber(_list);
 }
+
+void RelationClinetServer::sendStatusService(const bool &_status)
+{
+    qDebug() << "status is" << _status;
+    QByteArray _data;
+    QDataStream _out(&_data , QIODevice::WriteOnly);
+    _out << _status;
+
+    m_socketClient->write(_data);
+}
