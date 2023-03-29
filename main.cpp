@@ -1,36 +1,28 @@
-#include <QCoreApplication>
-#include "createConnectionCLient.h"
-#include <QTcpSocket>
-#include <QDataStream>
-#include <QVector>
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
+
+#include "ifaceqml.h"
+#include "relationclinetserver.h"
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
-    QTcpSocket *_socketClient = createConnectionCLient::get_instance("localhost" , 1234);
-    if(_socketClient->waitForConnected(3000))
+    QGuiApplication app(argc, argv);
+    QQmlApplicationEngine engine;
+
+    RelationClinetServer _relationClinetServer;
+    IFaceQML _ifaceQML;
+
+    QObject::connect(&_relationClinetServer, &RelationClinetServer::sendGraphNumber, &_ifaceQML , &IFaceQML::recivedGraphNumber );
+
+
+    engine.rootContext()->setContextProperty("interfaceQML" ,  &_ifaceQML);
+
+    const QUrl url(QStringLiteral("qrc:/main.qml"));
+    engine.load(url);
+
+    if(app.exec())
     {
-        qDebug() << "Connected!";
-
-        // send
-        _socketClient->write("hello server");
-        _socketClient->flush();
-
-        QByteArray _receivedData = _socketClient->readAll();
-        QDataStream stream(&_receivedData, QIODevice::ReadOnly);
-        QVector<double> _valueVector;
-        stream >> _valueVector;
-
-        for (int i = 0; i < _valueVector.size(); i++) {
-            double _vectorValues = _valueVector[i];
-            qDebug() << _vectorValues;
-        }
-//        _socketClient->close();
+        return app.exec();
     }
-    else
-    {
-        qDebug() << "Not connected!";
-    }
-
-    return a.exec();
 }
