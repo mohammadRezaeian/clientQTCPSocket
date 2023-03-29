@@ -157,9 +157,9 @@ Window {
             hoverEnabled: true
             anchors.fill: parent
             onReleased:  {
+                interfaceQML.inputSetSatus(false)
                 clickeButtonStartEnable = true
                 buttonStop.color = "gray"
-                interfaceQML.inputSetSatus(false)
             }
         }
     }

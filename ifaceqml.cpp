@@ -23,10 +23,11 @@ void IFaceQML::inputSetSatus(bool _status)
     setStatus(_status);
 }
 
-void IFaceQML::setStatus(bool _status)
+void IFaceQML::setStatus(bool &_status)
 {
     m_status = _status;
     emit statusChanged();
+    emit statusService(m_status);
 }
 
 void IFaceQML::recivedGraphNumber(const QVariantList &_list)

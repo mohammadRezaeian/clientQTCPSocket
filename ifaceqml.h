@@ -25,7 +25,7 @@ private:
     QVariantList m_graphNumber;
     bool m_status;
 
-    void setStatus(bool _status);
+    void setStatus(bool &_status);
 public slots:
     void recivedGraphNumber(const QVariantList &_list);
 
@@ -33,5 +33,6 @@ signals:
     void  graphNumberChanged();
     void  statusChanged();
     void  getSizeList(int _size);
+    void  statusService(const bool &_status);
 };
 #endif // IFACEQML_H
