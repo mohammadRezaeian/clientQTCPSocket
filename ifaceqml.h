@@ -14,7 +14,7 @@ public:
     Q_PROPERTY(QVariantList m_graphNumber READ getGraphNumber NOTIFY graphNumberChanged)
     Q_PROPERTY(bool m_status READ getStatus WRITE setStatus NOTIFY statusChanged)
 
-    Q_INVOKABLE void inputReciveGraph(QVariantList _list);
+    Q_INVOKABLE void inputReciveGraph(const QVariantList &_list);
 
     Q_INVOKABLE void inputSetSatus(bool _status);
 
@@ -32,6 +32,6 @@ public slots:
 signals:
     void  graphNumberChanged();
     void  statusChanged();
-
+    void  getSizeList(int _size);
 };
 #endif // IFACEQML_H

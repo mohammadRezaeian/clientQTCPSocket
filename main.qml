@@ -6,6 +6,7 @@ Window {
     width: 800
     height: 500
     property var graphNumbers
+    property var sizeListGraphe
 
     property int counterHeightChart: 20
     property int numRects: 5 // Number rects
@@ -17,8 +18,12 @@ Window {
 
     Connections{
         target: interfaceQML
-        function onGraphNumberChanged(_list){
-            console.log("omad")
+        function onGraphNumberChanged(){
+
+        }
+        function onGetSizeList(_size){
+            sizeListGraphe = _size
+            console.log(sizeListGraphe)
         }
     }
 
@@ -104,26 +109,26 @@ Window {
         }
     }
 
-//    Item{
-//        id: sinouseNumbers
-//        height: parent.height
-//        width: parent.width*0.95
-//        anchors.right: parent.right
-
-//        Canvas{
-//            anchors.fill: parent
-//            onPaint: {
-//                var ctx = getContext("2d");
-//                ctx.strokeStyle = "green";
-//                ctx.lineWidth = 5;
-//                ctx.beginPath();
-//                ctx.moveTo(0, parent.height - 50);
-//                for(var i = 0 ; i < 12 ; )
-//                {
-////                    ctx.lineTo(i , (parent.height - j));
-//                }
-//                ctx.stroke();
-//            }
-//        }
-//    }
+    Item{
+        id: sinouseNumbers
+        height: parent.height
+        width: parent.width*0.95
+        anchors.right: parent.right
+        Canvas{
+            id:sinouseNumberGraph
+            anchors.fill: parent
+            onPaint: {
+                var ctx = getContext("2d");
+                ctx.strokeStyle = "green";
+                ctx.lineWidth = 15;
+                ctx.beginPath();
+                ctx.moveTo(0, parent.height - 7);
+                for(var i =0 ; i < sizeListGraphe; i++)
+                {
+                    ctx.lineTo(interfaceQML.m_graphNumber[i]  ,(interfaceQML.m_graphNumber[i+1] > sizeListGraphe ? 0 : interfaceQML.m_graphNumber[i+1]));
+                }
+                ctx.stroke();
+            }
+        }
+    }
 }

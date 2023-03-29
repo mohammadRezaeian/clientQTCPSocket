@@ -6,9 +6,10 @@ IFaceQML::IFaceQML(QObject *parent)
 
 }
 
-void IFaceQML::inputReciveGraph(QVariantList _list)
+void IFaceQML::inputReciveGraph(const QVariantList &_list)
 {
     m_graphNumber = _list;
+    emit getSizeList(m_graphNumber.length()-1);
     emit graphNumberChanged();
 }
 
@@ -30,7 +31,7 @@ void IFaceQML::setStatus(bool _status)
 
 void IFaceQML::recivedGraphNumber(const QVariantList &_list)
 {
-    qDebug() << _list;
+    inputReciveGraph(_list);
 }
 
 bool IFaceQML::getStatus()
