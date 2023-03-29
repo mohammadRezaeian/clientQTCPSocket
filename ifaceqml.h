@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVariantList>
+#include <QDebug>
 
 class IFaceQML : public QObject
 {
@@ -13,9 +14,9 @@ public:
     Q_PROPERTY(QVariantList m_graphNumber READ getGraphNumber NOTIFY graphNumberChanged)
     Q_PROPERTY(bool m_status READ getStatus WRITE setStatus NOTIFY statusChanged)
 
-    Q_INVOKABLE void reciveGraph(QVariantList _list);
+    Q_INVOKABLE void inputReciveGraph(QVariantList _list);
 
-    Q_INVOKABLE void status(bool _status);
+    Q_INVOKABLE void inputSetSatus(bool _status);
 
     QVariantList getGraphNumber();
     bool getStatus();
@@ -25,9 +26,12 @@ private:
     bool m_status;
 
     void setStatus(bool _status);
+public slots:
+    void recivedGraphNumber(const QVariantList &_list);
 
 signals:
     void  graphNumberChanged();
     void  statusChanged();
+
 };
 #endif // IFACEQML_H
