@@ -116,7 +116,8 @@ Window {
 
     Item{
         id: sinouseNumbers
-        height: parent.height
+        height: parent.height*0.9
+
         width: parent.width*0.95
         anchors.right: parent.right
         Canvas{
@@ -125,13 +126,21 @@ Window {
             onPaint: {
                 var ctx = getContext("2d");
                 ctx.strokeStyle = "green";
-                ctx.lineWidth = 15;
+                ctx.lineWidth = 4;
                 ctx.beginPath();
                 ctx.moveTo(0, parent.height - 66);
-                for(var i =0 ; i < sizeListGraphe; i++)
-                {
-                    ctx.lineTo(interfaceQML.m_graphNumber[i]  ,(interfaceQML.m_graphNumber[i+1] > sizeListGraphe ? 0 : interfaceQML.m_graphNumber[i+1]));
-                }
+//                for(var i =0 ; i < sizeListGraphe; i++)
+//                {
+//                    ctx.lineTo(interfaceQML.m_graphNumber[i]  ,(interfaceQML.m_graphNumber[i+1] > sizeListGraphe ? 0 : interfaceQML.m_graphNumber[i+1]));
+//                }
+                ctx.lineTo(151.218 , 62.6109)
+                ctx.lineTo(172.272,88.9233)
+                ctx.lineTo(161.722 , 14.5832)
+                ctx.lineTo(41.9321 , 129.489)
+
+
+
+
                 ctx.stroke();
             }
         }
