@@ -16,7 +16,6 @@ public:
 
     static QTcpSocket *get_instance(QString _host, quint16 _port);
 
-
 private:
     createConnectionCLient();
     static createConnectionCLient *m_createClinet;

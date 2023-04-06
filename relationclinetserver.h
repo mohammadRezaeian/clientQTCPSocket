@@ -16,12 +16,19 @@ public:
     explicit RelationClinetServer(QObject *parent = nullptr);
     QTcpSocket *m_socketClient;
 signals:
-    void sendGraphNumber(const QVariantList &_list);
+    void sendGraphNumber(QVariantList _list);
+    void sendClearGraphNumber(QVariantList _list);
     void exampleSignal();
 
 private:
     void createConnection();
-    QVector<double> m_saveDataServer;
+    void sendNumbers();
+    void rescaleNumbers(QVariantList &_list , int RMin , int RMax , int RMinG , int RMaxG);
+    QVariantList m_list;
+    QVariantList m_pastList;
+    bool m_saveLifeButton ;
+
+
 private slots:
     void reciveServer();
 public slots:

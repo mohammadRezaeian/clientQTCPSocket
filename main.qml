@@ -9,7 +9,7 @@ Window {
 
     property var graphNumbers
     property var sizeListGraphe
-
+    property var sizeListClear
     property int counterHeightChart: 20
     property int numRects: 5 // Number rects
     //    property int rectWidth: Math.floor ( ( width  - ( numRects + 1 ) * rectMargin ) / numRects)
@@ -21,15 +21,58 @@ Window {
     property bool hoveredButtonStop: true
     property bool clickeButtonStartEnable: true
 
+    property double numberIncrease: 0.00555
+    property double numberIncreaseClear: 0
+
+    property var listValues
+    property int moveToXValue:0
+    property int moveToYValue : 0
+
+    property var savePastWidth
+    property var savePastWidthClear
+
+    property bool checkClearPage: false
+    property var colorStrokeStyle: "red"
+    property var pastValueGraphNumber:[]
+    property var pastValueMoveXNumber:[]
+    property var pastValueMoveYnumber:[]
+    property var pastValueNumberIncrement:[]
+    property int counterSavePastNumberMoveX:0
+    property int counterSavePastNumberMoveY: 0
+
     Connections{
         target: interfaceQML
-        function onGraphNumberChanged(){
+
+        function onGraphNumberChanged()
+        {
+            //            sinouseNumberGraph.requestPaint()
+            if(interfaceQML.m_status)
+            {
+                sinouseNumberGraph.paintingDraw()
+            }
+            else
+            {
+                sinouseNumberGraph.paintingDraw()
+            }
 
         }
+        function onClearGraphNumberChanged()
+        {
+            sinouseNumberGraph.clearDraw()
+        }
+        function onGetSizeClear(_size)
+        {
+            sizeListClear = _size
+        }
+
         function onGetSizeList(_size){
             sizeListGraphe = _size
-            console.log(sizeListGraphe)
         }
+        function onStatusChanged(_status)
+        {
+
+        }
+
     }
 
     Label{
@@ -83,8 +126,8 @@ Window {
 
     Rectangle {
         id: rect
-        height: parent.height*0.9
-        width: parent.width*0.95
+        height: Math.floor(parent.height*0.9)
+        width: Math.floor(parent.width*0.95)
         anchors.right: parent.right
         Canvas {
             id: canvas
@@ -123,28 +166,83 @@ Window {
         Canvas{
             id:sinouseNumberGraph
             anchors.fill: parent
-            onPaint: {
+            function paintingDraw()
+            {
                 var ctx = getContext("2d");
-                ctx.strokeStyle = "green";
+                ctx.strokeStyle = colorStrokeStyle
                 ctx.lineWidth = 4;
                 ctx.beginPath();
-                ctx.moveTo(0, parent.height - 66);
-//                for(var i =0 ; i < sizeListGraphe; i++)
-//                {
-//                    ctx.lineTo(interfaceQML.m_graphNumber[i]  ,(interfaceQML.m_graphNumber[i+1] > sizeListGraphe ? 0 : interfaceQML.m_graphNumber[i+1]));
-//                }
-                ctx.lineTo(151.218 , 62.6109)
-                ctx.lineTo(172.272,88.9233)
-                ctx.lineTo(161.722 , 14.5832)
-                ctx.lineTo(41.9321 , 129.489)
+                ctx.moveTo(moveToXValue , moveToYValue);
+
+                if(interfaceQML.m_status)
+                {
+                    colorStrokeStyle = "green"
+
+                    for(var i =0 ; i < sizeListGraphe; i++)
+                    {
+                        ctx.lineTo(numberIncrease , interfaceQML.m_graphNumber[i])
+                        savePastWidth  = numberIncrease
+                        moveToXValue   = savePastWidth
+                        moveToYValue   = interfaceQML.m_graphNumber[i]
+                        numberIncrease =  numberIncrease + 1;
+                        pastValueMoveXNumber[counterSavePastNumberMoveX] = moveToXValue
+                        counterSavePastNumberMoveX++;
+                        ctx.stroke();
+                    }
+
+                    if(numberIncrease > 807)
+                    {
+                        numberIncrease = 0
+                        moveToXValue = 0
+                        moveToYValue = 0
+                        numberIncrease = 0.00555;
+
+                    }
+                }
+                else
+                {
+                    moveToYValue = parent.height/2
+                    colorStrokeStyle="red"
+                    ctx.lineTo(numberIncrease , moveToYValue)
+                    numberIncrease =  numberIncrease + 1
 
 
+                    ctx.stroke();
+                    if(numberIncrease > 807)
+                    {
+                        numberIncrease = 0
+                    }
+
+//                    ctx.clearRect(0  , 0  ,numberIncrease +5,moveToYValue)
+                    numberIncrease += 1
+
+                }
+                sinouseNumberGraph.requestPaint();
+            }
+            function clearDraw()
+            {
+                var ctx = getContext("2d");
+
+                for(var i =0 ; i < sizeListClear; i++)
+                {
+                    ctx.clearRect(numberIncreaseClear, interfaceQML.m_clearGraphNumber[i], 1, 540);
+                    numberIncreaseClear +=1;
+                    if(numberIncreaseClear > 806)
+                    {
+                        numberIncreaseClear=0.00555;
+                    }
 
 
-                ctx.stroke();
+                    sinouseNumberGraph.requestPaint();
+                }
+
+
             }
         }
+
     }
+
+
 
     Rectangle{
         id:buttonStop
@@ -158,7 +256,7 @@ Window {
 
         Text {
             id: name
-            text: "Be Carefully"
+            text: "Be Carefull"
             anchors.centerIn: parent
         }
 
