@@ -58,7 +58,10 @@ Window {
         }
         function onClearGraphNumberChanged()
         {
-            sinouseNumberGraph.clearDraw()
+            if(interfaceQML.m_clearGraphNumber[0] !== "undefined")
+            {
+                sinouseNumberGraph.clearDraw()
+            }
         }
         function onGetSizeClear(_size)
         {
@@ -204,8 +207,7 @@ Window {
                     moveToYValue = parent.height/2
                     colorStrokeStyle="red"
                     ctx.lineTo(numberIncrease , moveToYValue)
-                    numberIncrease =  numberIncrease + 1
-
+                    numberIncrease =  numberIncrease + 5
 
                     ctx.stroke();
                     if(numberIncrease > 807)
@@ -213,8 +215,6 @@ Window {
                         numberIncrease = 0
                     }
 
-//                    ctx.clearRect(0  , 0  ,numberIncrease +5,moveToYValue)
-                    numberIncrease += 1
 
                 }
                 sinouseNumberGraph.requestPaint();
@@ -225,6 +225,7 @@ Window {
 
                 for(var i =0 ; i < sizeListClear; i++)
                 {
+
                     ctx.clearRect(numberIncreaseClear, interfaceQML.m_clearGraphNumber[i], 1, 540);
                     numberIncreaseClear +=1;
                     if(numberIncreaseClear > 806)

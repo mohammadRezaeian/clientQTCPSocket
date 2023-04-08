@@ -59,32 +59,37 @@ void RelationClinetServer::rescaleNumbers(QVariantList &_list, int RMin, int RMa
 
 void RelationClinetServer::reciveServer()
 {
+    //double _templateValue;
+    //QByteArray _byteArray = m_socketClient->readAll();
+    //QDataStream _stream(&_byteArray , QIODevice::ReadOnly);
+    //_stream >> _templateValue;
+    //m_list.append(_templateValue);
+    //m_pastList.append(_templateValue);
+    //sendNumbers();
+
     double _templateValue;
     QByteArray _byteArray = m_socketClient->readAll();
-    QDataStream _stream(&_byteArray , QIODevice::ReadOnly);
-    _stream >> _templateValue;
-    m_list.append(_templateValue);
-    m_pastList.append(_templateValue);
-            //    if(_counter == 807)
-            //    {
-            //        _counter = 0;
-            //    }
-            //    _counter++;
-            //    if(m_saveLifeButton)
-            //    {
-            sendNumbers();
-    //    }
-    //    else{
-    //        sendNumbers();
-    //    }
+    m_list.append(_byteArray.toDouble());
+    m_pastList.append(_byteArray.toDouble());
+    sendNumbers();
+
 }
 
 void RelationClinetServer::sendStatusService(const bool &_status)
 {
     m_saveLifeButton = _status;
-    qDebug() << "m_saveLifeButton" << m_saveLifeButton;
-    QByteArray _data;
-    QDataStream _out(&_data , QIODevice::WriteOnly);
-    _out << _status;
-    m_socketClient->write(_data);
+    //    QByteArray _data;
+    //    QDataStream _out(&_data , QIODevice::WriteOnly);
+    //    _out << _status;
+    //    m_socketClient->write(_data);
+
+    if(m_saveLifeButton == true)
+    {
+        m_socketClient->write("start");
+    }
+    else
+    {
+        m_socketClient->write("stop");
+    }
+
 }
