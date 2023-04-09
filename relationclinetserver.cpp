@@ -1,6 +1,6 @@
 #include "relationclinetserver.h"
 #define WIDTHQML  807
-#define HEIGHTQML 540
+#define HEIGHTQML 534
 RelationClinetServer::RelationClinetServer(QObject *parent)
     : QObject{parent}
 {
@@ -42,9 +42,9 @@ void RelationClinetServer::sendNumbers()
             _listQMLWrite.append(m_list.takeFirst());
         }
     }
-
     if(m_saveLifeButton)
-        rescaleNumbers(_listQMLWrite, 0, HEIGHTQML, 0, 8);
+        //rescaleNumbers(_listQMLWrite, 0, HEIGHTQML, 0, 8);
+        rescaleNumbers(_listQMLWrite, 0, HEIGHTQML, 4, 0);
 
     sendGraphNumber(_listQMLWrite);
     sendClearGraphNumber(_listQMLClean);
@@ -53,8 +53,9 @@ void RelationClinetServer::sendNumbers()
 void RelationClinetServer::rescaleNumbers(QVariantList &_list, int RMin, int RMax, int RMinG, int RMaxG)
 {
     for (int i = 0; i < _list.size(); i++) {
-        _list.replace( i , ( (RMax - RMin) * ( (_list.value(i).toDouble()) - RMinG) / (RMaxG - RMinG) + RMin) );
+        _list.replace( i ,( (RMax - RMin) * ( (_list.value(i).toDouble())) / (RMaxG - RMinG)));
     }
+
 }
 
 void RelationClinetServer::reciveServer()

@@ -11,7 +11,7 @@ Window {
     property var sizeListGraphe
     property var sizeListClear
     property int counterHeightChart: 20
-    property int numRects: 5 // Number rects
+    property int numRects:9  // Number rects
     //    property int rectWidth: Math.floor ( ( width  - ( numRects + 1 ) * rectMargin ) / numRects)
     property int rectWidth: Math.floor ( ( width*0.9599  -  numRects   * rectMargin ) / numRects) // remove right margin
     // find best height and weight with margin between
@@ -26,7 +26,8 @@ Window {
 
     property var listValues
     property int moveToXValue:0
-    property int moveToYValue : 0
+    property int moveToYValue : rect.height
+    property bool sing: false
 
     property var savePastWidth
     property var savePastWidthClear
@@ -80,41 +81,46 @@ Window {
 
     Label{
         id:number1
-        text: "20"
+        text: "4"
         font.pixelSize: parent.width*0.03
         color: "green"
         anchors.left: parent.left
+        anchors.leftMargin: parent.width*0.01
         anchors.top: parent.top
-        anchors.topMargin: parent.height*0.1
+        anchors.topMargin: parent.height*0.008
     }
     Label{
         id:number2
-        text: "15"
+        text: "3"
         font.pixelSize: parent.width*0.03
         color: "green"
         anchors.left: parent.left
+        anchors.leftMargin: parent.width*0.01
         anchors.top: number1.bottom
-        anchors.topMargin: parent.height*0.1
+        anchors.topMargin: parent.height*0.07
 
     }
     Label{
         id:number3
-        text: "10"
+        text: "2"
         font.pixelSize: parent.width*0.03
         color: "green"
         anchors.left: parent.left
+        anchors.leftMargin: parent.width*0.01
         anchors.top: number2.bottom
-        anchors.topMargin: parent.height*0.15
+        anchors.topMargin: parent.height*0.05
     }
 
     Label{
         id:number4
-        text: "5"
+        text: "1"
         font.pixelSize: parent.width*0.03
         color: "green"
         anchors.left: parent.left
+        anchors.leftMargin: parent.width*0.01
+
         anchors.top: number3.bottom
-        anchors.topMargin: parent.height*0.15
+        anchors.topMargin: parent.height*0.04
     }
 
     Label{
@@ -123,8 +129,46 @@ Window {
         font.pixelSize: parent.width*0.03
         color: "red"
         anchors.left: parent.left
+        anchors.leftMargin: parent.width*0.01
         anchors.top: number4.bottom
-        anchors.topMargin: parent.height*0.12
+        anchors.topMargin: parent.height*0.05
+    }
+    Label{
+        id:number6
+        text: "-1"
+        font.pixelSize: parent.width*0.03
+        color: "red"
+        anchors.left: parent.left
+        anchors.top: number5.bottom
+        anchors.topMargin: parent.height*0.05
+    }
+
+    Label{
+        id:number7
+        text: "-2"
+        font.pixelSize: parent.width*0.03
+        color: "red"
+        anchors.left: parent.left
+        anchors.top: number6.bottom
+        anchors.topMargin: parent.height*0.05
+    }
+    Label{
+        id:number8
+        text: "-3"
+        font.pixelSize: parent.width*0.03
+        color: "red"
+        anchors.left: parent.left
+        anchors.top: number7.bottom
+        anchors.topMargin: parent.height*0.05
+    }
+    Label{
+        id:number9
+        text: "-4"
+        font.pixelSize: parent.width*0.03
+        color: "red"
+        anchors.left: parent.left
+        anchors.top: number8.bottom
+        anchors.topMargin: parent.height*0.05
     }
 
     Rectangle {
@@ -162,8 +206,7 @@ Window {
 
     Item{
         id: sinouseNumbers
-        height: parent.height*0.9
-
+        height: parent.height*0.89
         width: parent.width*0.95
         anchors.right: parent.right
         Canvas{
@@ -172,24 +215,27 @@ Window {
             function paintingDraw()
             {
                 var ctx = getContext("2d");
-                ctx.strokeStyle = colorStrokeStyle
-                ctx.lineWidth = 4;
-                ctx.beginPath();
-                ctx.moveTo(moveToXValue , moveToYValue);
-
                 if(interfaceQML.m_status)
                 {
-                    colorStrokeStyle = "green"
-
                     for(var i =0 ; i < sizeListGraphe; i++)
                     {
-                        ctx.lineTo(numberIncrease , interfaceQML.m_graphNumber[i])
+                        colorStrokeStyle = "green"
+                        ctx.strokeStyle = colorStrokeStyle
+                        ctx.lineWidth = 4;
+                        ctx.beginPath();
+                        ctx.moveTo(moveToXValue , moveToYValue);
+
+                        if(interfaceQML.m_graphNumber[i] === 0)
+                            sing = !sing
+
+                        var newYValue = sing === true ? Math.abs(interfaceQML.m_graphNumber[i]) : 0 - Math.abs(interfaceQML.m_graphNumber[i])
+                        ctx.lineTo(numberIncrease , newYValue)
+
                         savePastWidth  = numberIncrease
                         moveToXValue   = savePastWidth
-                        moveToYValue   = interfaceQML.m_graphNumber[i]
-                        numberIncrease =  numberIncrease + 1;
-                        pastValueMoveXNumber[counterSavePastNumberMoveX] = moveToXValue
-                        counterSavePastNumberMoveX++;
+                        moveToYValue   = newYValue
+
+                        numberIncrease = numberIncrease + 1;
                         ctx.stroke();
                     }
 
@@ -204,8 +250,9 @@ Window {
                 }
                 else
                 {
-                    moveToYValue = parent.height/2
                     colorStrokeStyle="red"
+                    ctx.strokeStyle = colorStrokeStyle
+                    moveToYValue = parent.height/2
                     ctx.lineTo(numberIncrease , moveToYValue)
                     numberIncrease =  numberIncrease + 5
 
@@ -214,36 +261,29 @@ Window {
                     {
                         numberIncrease = 0
                     }
-
-
                 }
                 sinouseNumberGraph.requestPaint();
             }
+
             function clearDraw()
             {
                 var ctx = getContext("2d");
 
                 for(var i =0 ; i < sizeListClear; i++)
                 {
-
                     ctx.clearRect(numberIncreaseClear, interfaceQML.m_clearGraphNumber[i], 1, 540);
-                    numberIncreaseClear +=1;
-                    if(numberIncreaseClear > 806)
+                    numberIncreaseClear += 1;
+                    if(numberIncreaseClear > 807)
                     {
-                        numberIncreaseClear=0.00555;
+                        numberIncreaseClear=1;
                     }
-
-
                     sinouseNumberGraph.requestPaint();
                 }
-
 
             }
         }
 
     }
-
-
 
     Rectangle{
         id:buttonStop
@@ -295,9 +335,8 @@ Window {
                 clickeButtonStartEnable = false
                 buttonStop.color = "red"
                 interfaceQML.inputSetSatus(true)
+                console.log( "sinouseNumbers: " ,sinouseNumbers.height)
             }
-
         }
-
     }
 }
