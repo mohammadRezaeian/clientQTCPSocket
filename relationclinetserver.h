@@ -16,14 +16,16 @@ public:
     explicit RelationClinetServer(QObject *parent = nullptr);
     QTcpSocket *m_socketClient;
 signals:
-    void sendGraphNumber(QVariantList _list);
-    void sendClearGraphNumber(QVariantList _list);
+//    void sendGraphNumber(QVariantList _list);
+//    void sendClearGraphNumber(QVariantList _list);
+    void sendGraphNumber(double _value);
+    void sendClearGraphNumber(double _value);
     void exampleSignal();
 
 private:
     void createConnection();
     void sendNumbers();
-    void rescaleNumbers(QVariantList &_list , int RMin , int RMax , int RMinG , int RMaxG);
+    double rescaleNumbers   (double _value , int RMin , int RMax , int RMinG , int RMaxG);
     QVariantList m_list;
     QVariantList m_pastList;
     bool m_saveLifeButton ;

@@ -1,4 +1,7 @@
 #include "relationclinetserver.h"
+#include <string>
+#include <iostream>
+
 #define WIDTHQML  807
 #define HEIGHTQML 534
 RelationClinetServer::RelationClinetServer(QObject *parent)
@@ -24,56 +27,117 @@ void RelationClinetServer::createConnection()
 
 void RelationClinetServer::sendNumbers()
 {
-    QVariantList _listQMLWrite;
-    QVariantList _listQMLClean;
+    //    QVariantList _listQMLWrite;
+    //    QVariantList _listQMLClean;
 
-    if(m_pastList.length() == 970)
-    {
-        for(int i = 0 ; i < 6 ; i++)
-        {
-            _listQMLClean.append(m_pastList.takeFirst());
-        }
-    }
+    double _valueQMLWrite;
+    //    double _valueQMLClean;
 
-    if(m_list.size() > 8)
-    {
-        for(int i = 0 ; i < 6 ; i++)
-        {
-            _listQMLWrite.append(m_list.takeFirst());
-        }
-    }
+    if(!m_list.isEmpty())
+        _valueQMLWrite = m_list.takeFirst().toDouble();
+
+    //    if(!m_pastList.isEmpty())
+    //        _valueQMLClean = m_pastList.takeFirst().toDouble();
+
+    //    if(m_pastList.length() == 970)
+    //    {
+    //        for(int i = 0 ; i < 6 ; i++)
+    //        {
+    //            _listQMLClean.append(m_pastList.takeFirst());
+    //        }
+    //    }
+
+    //    if(m_list.size() > 8)
+    //    {
+    //        for(int i = 0 ; i < 6 ; i++)
+    //        {
+    //            _listQMLWrite.append(m_list.takeFirst());
+    //        }
+    //    }
     if(m_saveLifeButton)
-        //rescaleNumbers(_listQMLWrite, 0, HEIGHTQML, 0, 8);
-        rescaleNumbers(_listQMLWrite, 0, HEIGHTQML, 4, 0);
+        _valueQMLWrite = rescaleNumbers(_valueQMLWrite, 0, HEIGHTQML, 0, 4);
 
-    sendGraphNumber(_listQMLWrite);
-    sendClearGraphNumber(_listQMLClean);
+    sendGraphNumber(_valueQMLWrite);
+    //    sendClearGraphNumber(_valueQMLClean);
 }
 
-void RelationClinetServer::rescaleNumbers(QVariantList &_list, int RMin, int RMax, int RMinG, int RMaxG)
+double RelationClinetServer::rescaleNumbers(double _value, int RMin, int RMax, int RMinG, int RMaxG)
 {
-    for (int i = 0; i < _list.size(); i++) {
-        _list.replace( i ,( (RMax - RMin) * ( (_list.value(i).toDouble())) / (RMaxG - RMinG)));
-    }
+    //    for (int i = 0; i < _list.size(); i++) {
+    //        _list.replace( i ,( (RMax - RMin) * ( (_list.value(i).toDouble())) / (RMaxG - RMinG)));
+    //    }
+    return ((RMax - RMin) * _value / (RMaxG - RMinG));
 
 }
 
 void RelationClinetServer::reciveServer()
 {
-    //double _templateValue;
-    //QByteArray _byteArray = m_socketClient->readAll();
-    //QDataStream _stream(&_byteArray , QIODevice::ReadOnly);
-    //_stream >> _templateValue;
-    //m_list.append(_templateValue);
-    //m_pastList.append(_templateValue);
-    //sendNumbers();
+    char       _checkValid[2];
+    char       _dataRecive[8];
+    QByteArray _byteArray;
+    bool       _checkIsValid = false;
+    bool       _saveCurrentData = false;
+    bool       _dataCompleted = false;
 
-    double _templateValue;
-    QByteArray _byteArray = m_socketClient->readAll();
-    m_list.append(_byteArray.toDouble());
-    m_pastList.append(_byteArray.toDouble());
-    sendNumbers();
+    std::fill(_dataRecive ,_dataRecive + sizeof(_dataRecive) , '\0');
 
+    _byteArray = m_socketClient->readAll();
+
+    _checkValid[0] = _byteArray.at(0);
+    _checkValid[1] = _byteArray.at(1);
+
+    _byteArray.remove(0 , _checkValid[0]);
+    _byteArray.remove(1 , _checkValid[1]);
+
+    for(int _counterStateMachine = 10; _counterStateMachine <= _byteArray.size(); _counterStateMachine +=10)
+    {
+        if(_checkValid[0] == 'H' && _checkValid[1] == 'i')
+            _checkIsValid = true;
+
+        else
+        {
+
+        }
+        if(_saveCurrentData)
+        {
+
+        }
+
+        if(_checkIsValid)
+        {
+            for(int i = 0; i <= _byteArray.size() ; i++)
+            {
+                _dataRecive[i] = _byteArray.at(i);
+            }
+            if(_dataRecive[7] == '\0')
+            {
+                _dataCompleted = false;
+                _checkIsValid  = false;
+            }
+            else{
+                _dataCompleted = true;
+            }
+        }
+
+        if(_dataCompleted)
+        {
+            for(int i = 0; i <= 8 ; i++)
+            {
+                _byteArray.remove(i , _dataRecive[i]);
+            }
+
+            double* _dataConverted = reinterpret_cast<double*>(_dataRecive);
+            std::cout << "_dataConverted" << *_dataConverted << std::endl;
+            _checkIsValid = false;
+            m_list.append(*_dataConverted);
+
+            sendNumbers();
+        }
+        else
+        {
+
+        }
+    };
 }
 
 void RelationClinetServer::sendStatusService(const bool &_status)
