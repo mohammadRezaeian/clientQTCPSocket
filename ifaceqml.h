@@ -35,9 +35,9 @@ private:
 //    QVariantList m_clearGraphNumber;
     double m_graphNumber;
     double m_clearGraphNumber;
-    bool m_status;
 
-    void setStatus(bool &_status);
+    void setStatus(bool _status);
+
 public slots:
     void recivedGraphNumber(double _value);
     void recivedClearGraphNumber(double _value);
@@ -49,6 +49,6 @@ signals:
     void  statusChanged();
     void  getSizeList(int _size);
     void  getSizeClear(int _size);
-    void  statusService(const bool &_status);
+    void  statusService(bool _status);
 };
 #endif // IFACEQML_H

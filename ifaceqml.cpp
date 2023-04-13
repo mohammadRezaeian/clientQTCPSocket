@@ -30,11 +30,9 @@ void IFaceQML::inputSetSatus(bool _status)
     setStatus(_status);
 }
 
-void IFaceQML::setStatus(bool &_status)
+void IFaceQML::setStatus(bool _status)
 {
-    m_status = _status;
-    emit statusChanged();
-    emit statusService(m_status);
+    emit statusService(_status);
 }
 
 void IFaceQML::recivedGraphNumber(double _value)
@@ -63,6 +61,6 @@ double IFaceQML::getClearGraphNumber()
 
 bool IFaceQML::getStatus()
 {
-    return m_status;
+//    return m_status;
 }
 

@@ -4,8 +4,14 @@
 
 #define WIDTHQML  807
 #define HEIGHTQML 534
+
+#define PACKET_DATA_SIZE    8
+#define PACKET_DATA_HEADER  2
+
+
 RelationClinetServer::RelationClinetServer(QObject *parent)
-    : QObject{parent}
+    : QObject{parent},
+      DATA_STATUS{DATASTATUS::PHASE_1}
 {
     createConnection();
     connect(m_socketClient , &QTcpSocket::readyRead , this , &RelationClinetServer::reciveServer);
@@ -80,105 +86,53 @@ double RelationClinetServer::rescaleNumbers(double _value, int RMin, int RMax, i
 
 void RelationClinetServer::reciveServer()
 {
-    char       _checkValid[2];
-    static char _dataRecive[8];
+
+    char _dataRecive[8] = {0};
     QByteArray _byteArray;
-    bool       _checkIsValid = false;
-    bool       _saveCurrentData = false;
-    bool       _dataCompleted = false;
+
     static int8_t _indexResumData;
     int8_t     _checkNumberIndexRemove;
-    std::fill(_dataRecive ,_dataRecive + sizeof(_dataRecive) , '\0');
 
-    _byteArray = m_socketClient->readAll();
+    _byteArray.append(m_socketClient->readAll());
 
 
-    for(int _counterStateMachine = 10; _counterStateMachine <= _byteArray.size(); _counterStateMachine +=10)
-    {
-
-        if(_byteArray.at(0) == 'H' && _byteArray.at(1) == 'i')
-        {
-            _byteArray.remove(0 ,  1);
-            _byteArray.remove(0 ,  1);
-            m_statusMachin = STATEMACHIN_t::SM_DATANEWCOMING;
+    while (DATA_STATUS == DATASTATUS::PHASE_1 && _byteArray.size() >= PACKET_DATA_HEADER) {
+        if (_byteArray[0] == 'H' && _byteArray[1] == 'i') {
+            DATA_STATUS = DATASTATUS::PHASE_2;
+            _byteArray.remove(0, PACKET_DATA_HEADER);
         }
-
-        else
-        {
-            for(int i = 0; i <= _byteArray.size() ; i++)
-            {
-                if(!(_byteArray.at(0) == 'H' && _byteArray.at(1) == 'i'))
-                {
-                    _dataRecive[_indexResumData] = _byteArray.at(i);
-                    _indexResumData++;
-                    _checkNumberIndexRemove = i;
-                }
-                else
-                {
-                    for(int i = 0; i <= _checkNumberIndexRemove ; i++)
-                    {
-                        _byteArray.remove(i , _dataRecive[_checkNumberIndexRemove]);
-                    }
-
-                    double* _dataConverted = reinterpret_cast<double*>(_dataRecive);
-                    std::cout << "_dataConverted" << *_dataConverted << std::endl;
-                    m_list.append(*_dataConverted);
-
-                    sendNumbers();
-                    return;
-                }
-            }
+        else {
+            _byteArray.remove(0, PACKET_DATA_HEADER);
         }
+    }
 
-        if(m_statusMachin == STATEMACHIN_t::SM_DATANEWCOMING)
-        {
-            for(int i = 0; i < _byteArray.size() ; i++)
-            {
-                _dataRecive[i] = _byteArray.at(i);
-                _indexResumData = i;
-            }
+    if (DATA_STATUS == DATASTATUS::PHASE_2 && _byteArray.size() >= PACKET_DATA_SIZE) {
+        memcpy(_dataRecive, _byteArray.constData(), PACKET_DATA_SIZE);
+        _byteArray.remove(0, PACKET_DATA_SIZE);
+        DATA_STATUS = DATASTATUS::PHASE_1;
 
-            if(_dataRecive[7] == '\0')
-            {
-                m_statusMachin = STATEMACHIN_t::SM_DATARECIVEINCOMPLETE;
-            }
-            else
-            {
-                m_statusMachin = STATEMACHIN_t::SM_DATARECIVECOMPLETE;
-            }
-        }
+        double* _dataConverted = reinterpret_cast<double*>(_dataRecive);
+//        std::cout << "_dataConverted: " << *_dataConverted << std::endl;
+        m_list.append(*_dataConverted);
+        m_pastList.append(*_dataConverted);
 
-        if(m_statusMachin == STATEMACHIN_t::SM_DATARECIVECOMPLETE)
-        {
-            for(int i = 0; i <= 7 ; i++)
-            {
-                _byteArray.remove(0 , 1);
-            }
+        sendNumbers();
+    }
 
-            double* _dataConverted = reinterpret_cast<double*>(_dataRecive);
-            std::cout << "_dataConverted" << *_dataConverted << std::endl;
-            m_list.append(*_dataConverted);
-
-            sendNumbers();
-        }
-    };
 }
 
-void RelationClinetServer::sendStatusService(const bool &_status)
+void RelationClinetServer::sendStatusService(bool _status)
 {
+
     m_saveLifeButton = _status;
-    //    QByteArray _data;
-    //    QDataStream _out(&_data , QIODevice::WriteOnly);
-    //    _out << _status;
-    //    m_socketClient->write(_data);
 
     if(m_saveLifeButton == true)
     {
-        m_socketClient->write("start");
+        m_socketClient->write("A");
     }
     else
     {
-        m_socketClient->write("stop");
+        m_socketClient->write("B");
     }
 
 }

@@ -37,10 +37,15 @@ private:
     };
     STATEMACHIN_t m_statusMachin;
 
+    enum DATASTATUS {
+        PHASE_1,
+        PHASE_2
+    } DATA_STATUS;
+
 private slots:
     void reciveServer();
 public slots:
-    void sendStatusService(const bool &_status);
+    void sendStatusService(bool _status);
 
 };
 
