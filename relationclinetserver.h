@@ -30,6 +30,12 @@ private:
     QVariantList m_pastList;
     bool m_saveLifeButton ;
 
+    enum STATEMACHIN_t{
+        SM_DATANEWCOMING,
+        SM_DATARECIVECOMPLETE,
+        SM_DATARECIVEINCOMPLETE
+    };
+    STATEMACHIN_t m_statusMachin;
 
 private slots:
     void reciveServer();

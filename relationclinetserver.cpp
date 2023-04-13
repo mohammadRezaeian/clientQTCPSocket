@@ -31,10 +31,11 @@ void RelationClinetServer::sendNumbers()
     //    QVariantList _listQMLClean;
 
     double _valueQMLWrite;
-    //    double _valueQMLClean;
+    double _valueQMLClean;
 
     if(!m_list.isEmpty())
         _valueQMLWrite = m_list.takeFirst().toDouble();
+
 
     //    if(!m_pastList.isEmpty())
     //        _valueQMLClean = m_pastList.takeFirst().toDouble();
@@ -55,10 +56,17 @@ void RelationClinetServer::sendNumbers()
     //        }
     //    }
     if(m_saveLifeButton)
+    {
         _valueQMLWrite = rescaleNumbers(_valueQMLWrite, 0, HEIGHTQML, 0, 4);
+        m_pastList.append(_valueQMLWrite);
+
+    }
 
     sendGraphNumber(_valueQMLWrite);
-    //    sendClearGraphNumber(_valueQMLClean);
+
+    if(m_pastList.size() > 807)
+        sendClearGraphNumber(_valueQMLClean);
+
 }
 
 double RelationClinetServer::rescaleNumbers(double _value, int RMin, int RMax, int RMinG, int RMaxG)
@@ -73,69 +81,85 @@ double RelationClinetServer::rescaleNumbers(double _value, int RMin, int RMax, i
 void RelationClinetServer::reciveServer()
 {
     char       _checkValid[2];
-    char       _dataRecive[8];
+    static char _dataRecive[8];
     QByteArray _byteArray;
     bool       _checkIsValid = false;
     bool       _saveCurrentData = false;
     bool       _dataCompleted = false;
-
+    static int8_t _indexResumData;
+    int8_t     _checkNumberIndexRemove;
     std::fill(_dataRecive ,_dataRecive + sizeof(_dataRecive) , '\0');
 
     _byteArray = m_socketClient->readAll();
 
-    _checkValid[0] = _byteArray.at(0);
-    _checkValid[1] = _byteArray.at(1);
-
-    _byteArray.remove(0 , _checkValid[0]);
-    _byteArray.remove(1 , _checkValid[1]);
 
     for(int _counterStateMachine = 10; _counterStateMachine <= _byteArray.size(); _counterStateMachine +=10)
     {
-        if(_checkValid[0] == 'H' && _checkValid[1] == 'i')
-            _checkIsValid = true;
+
+        if(_byteArray.at(0) == 'H' && _byteArray.at(1) == 'i')
+        {
+            _byteArray.remove(0 ,  1);
+            _byteArray.remove(0 ,  1);
+            m_statusMachin = STATEMACHIN_t::SM_DATANEWCOMING;
+        }
 
         else
         {
-
-        }
-        if(_saveCurrentData)
-        {
-
-        }
-
-        if(_checkIsValid)
-        {
             for(int i = 0; i <= _byteArray.size() ; i++)
             {
-                _dataRecive[i] = _byteArray.at(i);
-            }
-            if(_dataRecive[7] == '\0')
-            {
-                _dataCompleted = false;
-                _checkIsValid  = false;
-            }
-            else{
-                _dataCompleted = true;
+                if(!(_byteArray.at(0) == 'H' && _byteArray.at(1) == 'i'))
+                {
+                    _dataRecive[_indexResumData] = _byteArray.at(i);
+                    _indexResumData++;
+                    _checkNumberIndexRemove = i;
+                }
+                else
+                {
+                    for(int i = 0; i <= _checkNumberIndexRemove ; i++)
+                    {
+                        _byteArray.remove(i , _dataRecive[_checkNumberIndexRemove]);
+                    }
+
+                    double* _dataConverted = reinterpret_cast<double*>(_dataRecive);
+                    std::cout << "_dataConverted" << *_dataConverted << std::endl;
+                    m_list.append(*_dataConverted);
+
+                    sendNumbers();
+                    return;
+                }
             }
         }
 
-        if(_dataCompleted)
+        if(m_statusMachin == STATEMACHIN_t::SM_DATANEWCOMING)
         {
-            for(int i = 0; i <= 8 ; i++)
+            for(int i = 0; i < _byteArray.size() ; i++)
             {
-                _byteArray.remove(i , _dataRecive[i]);
+                _dataRecive[i] = _byteArray.at(i);
+                _indexResumData = i;
+            }
+
+            if(_dataRecive[7] == '\0')
+            {
+                m_statusMachin = STATEMACHIN_t::SM_DATARECIVEINCOMPLETE;
+            }
+            else
+            {
+                m_statusMachin = STATEMACHIN_t::SM_DATARECIVECOMPLETE;
+            }
+        }
+
+        if(m_statusMachin == STATEMACHIN_t::SM_DATARECIVECOMPLETE)
+        {
+            for(int i = 0; i <= 7 ; i++)
+            {
+                _byteArray.remove(0 , 1);
             }
 
             double* _dataConverted = reinterpret_cast<double*>(_dataRecive);
             std::cout << "_dataConverted" << *_dataConverted << std::endl;
-            _checkIsValid = false;
             m_list.append(*_dataConverted);
 
             sendNumbers();
-        }
-        else
-        {
-
         }
     };
 }
