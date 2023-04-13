@@ -30,19 +30,19 @@ Window {
     //    property int moveToYValue : rect.height
 
     property bool sing: false
-
+    property bool checkOneCycleComplete: false
     property var savePastWidth
     property var savePastWidthClear
 
     property bool checkClearPage: false
-    property var colorStrokeStyle: "red"
+    property var colorStrokeStyle: "green"
     property var pastValueGraphNumber:[]
     property var pastValueMoveXNumber:[]
     property var pastValueMoveYnumber:[]
     property var pastValueNumberIncrement:[]
     property int counterSavePastNumberMoveX:0
     property int counterSavePastNumberMoveY: 0
-    property var valueWriteGraph
+
 
     Connections{
         target: interfaceQML
@@ -62,13 +62,13 @@ Window {
             }
 
         }
-        //        function onClearGraphNumberChanged()
-        //        {
-        //            if(interfaceQML.m_clearGraphNumber[0] !== "undefined")
-        //            {
-        //                sinouseNumberGraph.clearDraw()
-        //            }
-        //        }
+        function onClearGraphNumberChanged()
+        {
+//            if(interfaceQML.m_clearGraphNumber[0] !== "undefined")
+//            {
+                sinouseNumberGraph.clearDraw()
+//            }
+        }
         function onGetSizeClear(_size)
         {
             sizeListClear = _size
@@ -86,7 +86,7 @@ Window {
 
             //            valueWriteGraph =  _value
             //            console.log("valueWriteGraph\t" , valueWriteGraph)
-            sinouseNumberGraph.requestPaint()
+            sinouseNumberGraph.paintingDraw()
         }
 
     }
@@ -225,130 +225,166 @@ Window {
             id:sinouseNumberGraph
             anchors.fill: parent
 
+            function paintingDraw()
+            {
+                if(interfaceQML.m_status)
+                {
 
-            onPaint: {
-                //                var ctx = getContext("2d");
-                //                colorStrokeStyle = "green"
-                //                ctx.strokeStyle = colorStrokeStyle
-                //                ctx.lineWidth = 4;
+                    var ctx = getContext("2d");
 
-                //                let newYValue = interfaceQML.m_graphNumber
-                //                console.log(interfaceQML.m_graphNumber)
+                    ctx.strokeStyle = colorStrokeStyle
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.moveTo(moveToXValue , moveToYValue);
 
+                    if(interfaceQML.m_graphNumber === 0)
+                        sing = !sing
 
+                    //                    var newYValue = sing === true ? Math.abs(interfaceQML.m_graphNumber) : 0 - Math.abs(interfaceQML.m_graphNumber)
+                    ctx.lineTo(numberIncrease ,Math.abs(interfaceQML.m_graphNumber))
 
-                //                ctx.beginPath();
-                //                ctx.moveTo(moveToXValue , moveToYValue)
-                //                ctx.lineTo(numberIncrease , newYValue)
+                    console.log("interfaceQML.m_graphNumber=\t" , Math.abs(interfaceQML.m_graphNumber))
+                    savePastWidth  = numberIncrease
+                    moveToXValue   = savePastWidth
+                    moveToYValue   = Math.abs(interfaceQML.m_graphNumber)
 
-                //                ctx.stroke();
+                    numberIncrease = numberIncrease + 1
 
-                //                moveToXValue = numberIncrease;
-                //                moveToYValue   = newYValue
+                    ctx.stroke();
+                    requestPaint();
 
-                //                numberIncrease++;
+                    if(numberIncrease > 807)
+                    {
+                        numberIncrease = 0
+                        moveToXValue = 0
+                        moveToYValue = 0
+                        numberIncrease = 0;
 
-                var ctx = getContext("2d");
-                colorStrokeStyle = "green"
-                ctx.strokeStyle = colorStrokeStyle
-                ctx.lineWidth = 4;
-
-
-                if(valueWriteGraph === 0)
-                    sing = !sing
-//                console.log("interfaceQML.m_graphNumber=\t" , interfaceQML.m_graphNumber)
-                var newYValue = sing === true ? Math.abs(interfaceQML.m_graphNumber) : 0 - Math.abs(interfaceQML.m_graphNumber)
-                ctx.lineTo(numberIncrease , newYValue)
-
-                savePastWidth  = numberIncrease
-                moveToXValue   = savePastWidth
-                moveToYValue   = newYValue
-
-                numberIncrease = numberIncrease + 1;
-
-                ctx.stroke();
+                    }
+                    //                    if(checkOneCycleComplete)
+                    //                    {
+                    //                        console.log("omad")
+                    //                        ctx.clearRect(numberIncreaseClear,0,numberIncreaseClear-15,parent.height);
+                    //                        numberIncreaseClear +=1;
+                    //                        requestPaint();
+                    //                        if(numberIncreaseClear > 807)
+                    //                        {
+                    //                            numberIncreaseClear +=0;
+                    //                            checkOneCycleComplete = false
+                    //                        }
+                }
 
             }
 
-            //            function paintingDraw()
-            //            {
+            function clearDraw()
+            {
+                var ctx = getContext("2d");
 
-
-            //                if(interfaceQML.m_status)
-            //                {
-            //                    var ctx = getContext("2d");
-            ////                    for(var i =0 ; i < sizeListGraphe; i++)
-            ////                    {
-            //                        colorStrokeStyle = "green"
-            //                        ctx.strokeStyle = colorStrokeStyle
-            //                        ctx.lineWidth = 4;
-            //                        ctx.beginPath();
-            //                        ctx.moveTo(moveToXValue , moveToYValue);
-
-            //                        if(interfaceQML.m_graphNumber === 0)
-            //                            sing = !sing
-            //                        console.log("interfaceQML.m_graphNumber=\t" , interfaceQML.m_graphNumber)
-            //                        var newYValue = sing === true ? Math.abs(interfaceQML.m_graphNumber) : 0 - Math.abs(interfaceQML.m_graphNumber)
-            //                        ctx.lineTo(numberIncrease , newYValue)
-
-            //                        savePastWidth  = numberIncrease
-            //                        moveToXValue   = savePastWidth
-            //                        moveToYValue   = newYValue
-
-            //                        numberIncrease = numberIncrease + 1;
-
-            //                        requestPaint();
-            //                        ctx.stroke();
-
-
-            ////                    }
-
-            ////                    if(numberIncrease > 807)
-            ////                    {
-            ////                        numberIncrease = 0
-            ////                        moveToXValue = 0
-            ////                        moveToYValue = 0
-            ////                        numberIncrease = 0.00555;
-
-            ////                    }
-
-            //                }
-            ////                else
-            ////                {
-            ////                    colorStrokeStyle="red"
-            ////                    ctx.strokeStyle = colorStrokeStyle
-            ////                    moveToYValue = parent.height/2
-            ////                    ctx.lineTo(numberIncrease , moveToYValue)
-            ////                    numberIncrease =  numberIncrease + 5
-
-            ////                    ctx.stroke();
-            ////                    if(numberIncrease > 807)
-            ////                    {
-            ////                        numberIncrease = 0
-            ////                    }
-            ////                }
-
-            //            }
-
-            //            function clearDraw()
-            //            {
-            //                var ctx = getContext("2d");
-
-            //                for(var i =0 ; i < sizeListClear; i++)
-            //                {
-            //                    ctx.clearRect(numberIncreaseClear, interfaceQML.m_clearGraphNumber[i], 1, 540);
-            //                    numberIncreaseClear += 1;
-            //                    if(numberIncreaseClear > 807)
-            //                    {
-            //                        numberIncreaseClear=1;
-            //                    }
-            ////                    sinouseNumberGraph.requestPaint();
-            //                }
-
-            //            }
+                ctx.clearRect(numberIncreaseClear, interfaceQML.m_clearGraphNumber, 1, 540);
+                numberIncreaseClear += 1;
+                if(numberIncreaseClear > 807)
+                {
+                    numberIncreaseClear=0;
+                }
+            }
         }
 
+        //                if(interfaceQML.m_status)
+        //                {
     }
+
+    //            onPaint: {
+    //                //                var ctx = getContext("2d");
+    //                //                colorStrokeStyle = "green"
+    //                //                ctx.strokeStyle = colorStrokeStyle
+    //                //                ctx.lineWidth = 4;
+
+    //                //                let newYValue = interfaceQML.m_graphNumber
+    //                //                console.log(interfaceQML.m_graphNumber)
+
+
+
+    //                //                ctx.beginPath();
+    //                //                ctx.moveTo(moveToXValue , moveToYValue)
+    //                //                ctx.lineTo(numberIncrease , newYValue)
+
+    //                //                ctx.stroke();
+
+    //                //                moveToXValue = numberIncrease;
+    //                //                moveToYValue   = newYValue
+
+    //                //                numberIncrease++;
+
+    //                var ctx = getContext("2d");
+    //                colorStrokeStyle = "green"
+    //                ctx.strokeStyle = colorStrokeStyle
+    //                ctx.lineWidth = 4;
+
+
+    //                if(valueWriteGraph === 0)
+    //                    sing = !sing
+    //                console.log("interfaceQML.m_graphNumber=\t" , interfaceQML.m_graphNumber)
+    //                var newYValue = sing === true ? Math.abs(interfaceQML.m_graphNumber) : 0 - Math.abs(interfaceQML.m_graphNumber)
+    //                ctx.lineTo(numberIncrease , newYValue)
+
+    //                savePastWidth  = numberIncrease
+    //                moveToXValue   = savePastWidth
+    //                moveToYValue   = newYValue
+
+    //                numberIncrease = numberIncrease + 1;
+
+    //                ctx.stroke();
+
+    //            }
+
+
+    //                    }
+
+    //                    if(numberIncrease > 807)
+    //                    {
+    //                        numberIncrease = 0
+    //                        moveToXValue = 0
+    //                        moveToYValue = 0
+    //                        numberIncrease = 0.00555;
+
+    //                    }
+
+    //                }
+    ////                else
+    ////                {
+    ////                    colorStrokeStyle="red"
+    ////                    ctx.strokeStyle = colorStrokeStyle
+    ////                    moveToYValue = parent.height/2
+    ////                    ctx.lineTo(numberIncrease , moveToYValue)
+    ////                    numberIncrease =  numberIncrease + 5
+
+    ////                    ctx.stroke();
+    ////                    if(numberIncrease > 807)
+    ////                    {
+    ////                        numberIncrease = 0
+    ////                    }
+    ////                }
+
+    //            }
+
+    //            function clearDraw()
+    //            {
+    //                var ctx = getContext("2d");
+
+    //                for(var i =0 ; i < sizeListClear; i++)
+    //                {
+    //                    ctx.clearRect(numberIncreaseClear, interfaceQML.m_clearGraphNumber[i], 1, 540);
+    //                    numberIncreaseClear += 1;
+    //                    if(numberIncreaseClear > 807)
+    //                    {
+    //                        numberIncreaseClear=1;
+    //                    }
+    ////                    sinouseNumberGraph.requestPaint();
+    //                }
+
+    //            }
+
+
 
     Rectangle{
         id:buttonStop
