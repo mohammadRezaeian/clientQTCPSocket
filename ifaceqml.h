@@ -23,19 +23,16 @@ public:
 
     Q_INVOKABLE void inputSetSatus(bool _status);
 
-//    QVariantList getGraphNumber();
-//    QVariantList getClearGraphNumber();
+
     double getGraphNumber();
     double getClearGraphNumber();
 
     bool getStatus();
 
 private:
-//    QVariantList m_graphNumber;
-//    QVariantList m_clearGraphNumber;
     double m_graphNumber;
     double m_clearGraphNumber;
-
+    bool   m_status;
     void setStatus(bool _status);
 
 public slots:

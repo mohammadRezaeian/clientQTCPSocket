@@ -33,8 +33,6 @@ void RelationClinetServer::createConnection()
 
 void RelationClinetServer::sendNumbers()
 {
-    //    QVariantList _listQMLWrite;
-    //    QVariantList _listQMLClean;
 
     double _valueQMLWrite;
     double _valueQMLClean;
@@ -42,25 +40,6 @@ void RelationClinetServer::sendNumbers()
     if(!m_list.isEmpty())
         _valueQMLWrite = m_list.takeFirst().toDouble();
 
-
-    //    if(!m_pastList.isEmpty())
-    //        _valueQMLClean = m_pastList.takeFirst().toDouble();
-
-    //    if(m_pastList.length() == 970)
-    //    {
-    //        for(int i = 0 ; i < 6 ; i++)
-    //        {
-    //            _listQMLClean.append(m_pastList.takeFirst());
-    //        }
-    //    }
-
-    //    if(m_list.size() > 8)
-    //    {
-    //        for(int i = 0 ; i < 6 ; i++)
-    //        {
-    //            _listQMLWrite.append(m_list.takeFirst());
-    //        }
-    //    }
     if(m_saveLifeButton)
     {
         _valueQMLWrite = rescaleNumbers(_valueQMLWrite, 0, HEIGHTQML, 0, 4);
@@ -70,23 +49,19 @@ void RelationClinetServer::sendNumbers()
 
     sendGraphNumber(_valueQMLWrite);
 
-    if(m_pastList.size() > 807)
+    if(m_pastList.size() > 1614)
         sendClearGraphNumber(_valueQMLClean);
+
 
 }
 
 double RelationClinetServer::rescaleNumbers(double _value, int RMin, int RMax, int RMinG, int RMaxG)
 {
-    //    for (int i = 0; i < _list.size(); i++) {
-    //        _list.replace( i ,( (RMax - RMin) * ( (_list.value(i).toDouble())) / (RMaxG - RMinG)));
-    //    }
     return ((RMax - RMin) * _value / (RMaxG - RMinG));
-
 }
 
 void RelationClinetServer::reciveServer()
 {
-
     char _dataRecive[8] = {0};
     QByteArray _byteArray;
 
@@ -112,7 +87,6 @@ void RelationClinetServer::reciveServer()
         DATA_STATUS = DATASTATUS::PHASE_1;
 
         double* _dataConverted = reinterpret_cast<double*>(_dataRecive);
-//        std::cout << "_dataConverted: " << *_dataConverted << std::endl;
         m_list.append(*_dataConverted);
         m_pastList.append(*_dataConverted);
 
@@ -123,7 +97,6 @@ void RelationClinetServer::reciveServer()
 
 void RelationClinetServer::sendStatusService(bool _status)
 {
-
     m_saveLifeButton = _status;
 
     if(m_saveLifeButton == true)

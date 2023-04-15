@@ -8,13 +8,7 @@ IFaceQML::IFaceQML(QObject *parent)
 
 void IFaceQML::inputReciveGraph(const double _value)
 {
-
-//    m_graphNumber = _list;
-//    emit getSizeList(m_graphNumber.length()-1);
-//    emit graphNumberChanged();
     m_graphNumber = _value;
-//    emit getSizeList(m_graphNumber.length()-1);
-//    emit graphNumberChanged();
     emit testGraphNumber(m_graphNumber);
 }
 
@@ -32,16 +26,13 @@ void IFaceQML::inputSetSatus(bool _status)
 
 void IFaceQML::setStatus(bool _status)
 {
+    m_status = _status;
+    emit statusChanged();
     emit statusService(_status);
 }
 
 void IFaceQML::recivedGraphNumber(double _value)
 {
-    //    if(!_list.size() == 0)
-    //    {
-    //        inputReciveGraph(_list);
-    //    }
-//    qDebug() <<"_value\t" << _value;
     inputReciveGraph(_value);
 
 }
@@ -61,6 +52,6 @@ double IFaceQML::getClearGraphNumber()
 
 bool IFaceQML::getStatus()
 {
-//    return m_status;
+    return m_status;
 }
 

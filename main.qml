@@ -23,10 +23,10 @@ Window {
 
     property double numberIncrease: 0
     property double numberIncreaseClear: 0
-
+    property var sizeClearLine: 20
     property var listValues
     property int moveToXValue:0
-    property int moveToYValue : 0
+    property int moveToYValue : sinouseNumbers.height/2
     //    property int moveToYValue : rect.height
 
     property bool sing: false
@@ -36,6 +36,8 @@ Window {
 
     property bool checkClearPage: false
     property var colorStrokeStyle: "green"
+    property bool checkClearLineRed: false
+
     property var pastValueGraphNumber:[]
     property var pastValueMoveXNumber:[]
     property var pastValueMoveYnumber:[]
@@ -43,7 +45,9 @@ Window {
     property int counterSavePastNumberMoveX:0
     property int counterSavePastNumberMoveY: 0
 
-
+    property var saveMoveToXLineRed
+    property bool checkClikeButtonStop: false
+    property bool checkGreenDraw : false
     Connections{
         target: interfaceQML
 
@@ -225,24 +229,33 @@ Window {
                 ctx.strokeStyle = colorStrokeStyle
                 ctx.lineWidth = 4;
                 ctx.beginPath();
-                ctx.moveTo(moveToXValue , moveToYValue);
+
+                if(checkClikeButtonStop === true && saveMoveToXLineRed !== "undefined" && interfaceQML.m_status)
+                {
+                    moveToYValue = sinouseNumbers.height/2
+                    console.log("y value now is: " , moveToYValue)
+
+                    ctx.moveTo(saveMoveToXLineRed , moveToYValue);
+                    checkClikeButtonStop = false
+                    saveMoveToXLineRed = "undefined"
+
+                }
+                else
+                {
+                    ctx.moveTo(moveToXValue, moveToYValue);
+                }
+
 
                 if(interfaceQML.m_status)
                 {
-
-
-                    if(interfaceQML.m_graphNumber === 0)
-                        sing = !sing
-
-                    //                    var newYValue = sing === true ? Math.abs(interfaceQML.m_graphNumber) : 0 - Math.abs(interfaceQML.m_graphNumber)
-                    ctx.lineTo(numberIncrease ,Math.abs(interfaceQML.m_graphNumber))
-
-//                    console.log("interfaceQML.m_graphNumber=\t" , Math.abs(interfaceQML.m_graphNumber))
-                    savePastWidth  = numberIncrease
-                    moveToXValue   = savePastWidth
-                    moveToYValue   = Math.abs(interfaceQML.m_graphNumber)
+                    colorStrokeStyle = "green"
+                    console.log("interfaceQML.m_graphNumber:\t" , interfaceQML.m_graphNumber)
+                    ctx.lineTo(numberIncrease ,Math.abs(interfaceQML.m_graphNumber) === 0 ? "undefined" : Math.abs(interfaceQML.m_graphNumber))
+                    moveToXValue   = numberIncrease
+                    moveToYValue   = Math.abs(interfaceQML.m_graphNumber) === 0 ? sinouseNumbers.height/2 : Math.abs(interfaceQML.m_graphNumber)
 
                     numberIncrease = numberIncrease + 1
+                    checkGreenDraw = false
 
                     ctx.stroke();
                     requestPaint();
@@ -251,26 +264,37 @@ Window {
                     {
                         numberIncrease = 0
                         moveToXValue = 0
-                        moveToYValue = 0
-                        numberIncrease = 0;
-
+                        moveToYValue = sinouseNumbers.height/2
                     }
                 }
                 else
                 {
+
                     moveToYValue = parent.height/2
                     colorStrokeStyle="red"
                     ctx.strokeStyle = colorStrokeStyle
-                    moveToYValue = parent.height/2
                     ctx.lineTo(numberIncrease , moveToYValue)
                     numberIncrease += 1
-                    ctx.stroke();
+                    saveMoveToXLineRed = numberIncrease
+                    checkClikeButtonStop = true
+                    console.log("interfaceQML.m_clearGraphNumber.Red:\t" , interfaceQML.m_clearGraphNumber)
 
-                    if(numberIncrease > 807)
-                    {
-                        numberIncrease = 0
-                    }
+                    ctx.stroke();
+//                    if(interfaceQML.m_clearGraphNumber === 0)
+//                    {
+                        if(numberIncrease > 807)
+                        {
+                            numberIncrease = 0
+                            moveToYValue = sinouseNumbers.height/2
+                            moveToXValue = 0
+                        }
+
+//                    }
+
                     requestPaint();
+
+
+
 
                 }
 
@@ -280,13 +304,22 @@ Window {
             function clearDraw()
             {
                 var ctx = getContext("2d");
+//                if(colorStrokeStyle  === "red")
+//                {
+//                    sizeClearLine = 5
+//                }
+//                else{
+//                    sizeClearLine = 1
+//                }
 
-                ctx.clearRect(numberIncreaseClear, interfaceQML.m_clearGraphNumber, 1, 540);
+                ctx.clearRect(numberIncreaseClear, interfaceQML.m_clearGraphNumber, sizeClearLine, 540);
                 numberIncreaseClear += 1;
                 if(numberIncreaseClear > 807)
                 {
                     numberIncreaseClear=0;
+                    checkClearLineRed = true
                 }
+                //                checkClearLineRed = false
             }
         }
 
